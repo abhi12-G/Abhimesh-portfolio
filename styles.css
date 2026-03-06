@@ -180,6 +180,22 @@ body.dark-theme .navbar-toggler-icon {
     display: flex;
     align-items: center;
     padding-top: 130px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(7, 11, 18, 0.46), rgba(7, 11, 18, 0.2));
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero .container {
+    position: relative;
+    z-index: 1;
 }
 
 .kicker {
@@ -194,41 +210,20 @@ body.dark-theme .navbar-toggler-icon {
 .three-showcase {
     position: relative;
     border: 1px solid var(--line);
-    border-radius: 20px;
+    border-radius: 18px;
     overflow: hidden;
-    min-height: 520px;
+    min-height: 460px;
+    padding: 0;
     background:
         radial-gradient(circle at 22% 14%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 42%),
         radial-gradient(circle at 78% 80%, color-mix(in srgb, var(--accent-2) 20%, transparent), transparent 50%),
-        #050505;
+        linear-gradient(160deg, color-mix(in srgb, var(--surface) 92%, transparent), var(--surface-2));
     box-shadow: var(--shadow);
 }
 
 .three-showcase .three-hero-canvas {
     width: 100%;
-    height: 520px;
-}
-
-.three-overlay-title {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    pointer-events: none;
-}
-
-.three-overlay-title h2 {
-    margin: 0;
-    font-size: clamp(2rem, 9vw, 6rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: #fff;
-    padding: 0.35em 0.5em;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.07);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 90px rgba(89, 182, 255, 0.2);
+    height: 460px;
 }
 
 .hero-image-wrap {
@@ -240,36 +235,9 @@ body.dark-theme .navbar-toggler-icon {
     box-shadow: var(--shadow);
 }
 
-.three-hero-wrap {
-    padding: 0;
-    overflow: hidden;
-    background:
-        radial-gradient(circle at 20% 12%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 42%),
-        radial-gradient(circle at 78% 80%, color-mix(in srgb, var(--accent-2) 24%, transparent), transparent 48%),
-        linear-gradient(160deg, color-mix(in srgb, var(--surface) 92%, transparent), var(--surface-2));
-}
-
 .three-hero-canvas {
     width: 100%;
     height: 460px;
-}
-
-.three-note {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    margin: 0;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--text) 76%, transparent);
-    background: color-mix(in srgb, var(--surface) 70%, transparent);
-    border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
-    border-radius: 999px;
-    padding: 0.35rem 0.62rem;
-    backdrop-filter: blur(4px);
-    pointer-events: none;
 }
 
 .hero-image {
@@ -565,11 +533,11 @@ body.dark-theme .navbar-toggler-icon {
     }
 
     .three-showcase {
-        min-height: 400px;
+        min-height: 380px;
     }
 
     .three-showcase .three-hero-canvas {
-        height: 400px;
+        height: 380px;
     }
 }
 
@@ -587,10 +555,10 @@ body.dark-theme .navbar-toggler-icon {
     }
 
     .three-showcase {
-        min-height: 340px;
+        min-height: 320px;
     }
 
     .three-showcase .three-hero-canvas {
-        height: 340px;
+        height: 320px;
     }
 }

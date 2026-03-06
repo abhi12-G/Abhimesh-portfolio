@@ -88,12 +88,42 @@ const setupProjectCardScroll = () => {
 
 const setupThreeIntro = () => {
     if (!window.gsap) return;
-    const title = document.querySelector(".three-overlay-title h2");
-    const scene = document.querySelector(".three-showcase");
-    if (!title || !scene) return;
+    const scene = document.querySelector(".hero-image-wrap");
+    if (!scene) return;
 
-    gsap.fromTo(scene, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1, ease: "power2.out" });
-    gsap.fromTo(title, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 1.15, delay: 0.2, ease: "power3.out" });
+    gsap.fromTo(scene, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 1, ease: "power2.out" });
+};
+
+const setupVantaHero = () => {
+    const hero = document.getElementById("home");
+    if (!hero || !window.VANTA || !window.VANTA.NET) return;
+
+    const effect = window.VANTA.NET({
+        el: hero,
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200,
+        minWidth: 200,
+        scale: 1,
+        scaleMobile: 1,
+        color: 0x59b6ff,
+        backgroundColor: 0x070b12,
+        points: 11,
+        maxDistance: 21,
+        spacing: 19,
+        showDots: false
+    });
+
+    window.addEventListener(
+        "beforeunload",
+        () => {
+            if (effect && typeof effect.destroy === "function") {
+                effect.destroy();
+            }
+        },
+        { once: true }
+    );
 };
 
 const setupEmailCopy = () => {
@@ -175,6 +205,7 @@ window.addEventListener("resize", () => {
 });
 
 window.addEventListener("load", () => {
+    setupVantaHero();
     setupThemeToggle();
     setNavState();
     setActiveLink();
