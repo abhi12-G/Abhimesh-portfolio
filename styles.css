@@ -1,5 +1,6 @@
 :root {
     color-scheme: light;
+    --font-ui: "Inter", "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --bg: #f7f8fb;
     --bg-2: #eef2f8;
     --surface: #ffffff;
@@ -19,6 +20,9 @@
     --btn-ghost-text: var(--text);
     --hero-overlay-start: rgba(255, 255, 255, 0.08);
     --hero-overlay-end: rgba(255, 255, 255, 0.02);
+    --glass-bg: rgba(255, 255, 255, 0.5);
+    --glass-bg-strong: rgba(255, 255, 255, 0.66);
+    --glass-border: rgba(255, 255, 255, 0.52);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -43,6 +47,9 @@
         --btn-ghost-text: #ffffff;
         --hero-overlay-start: rgba(7, 11, 18, 0.46);
         --hero-overlay-end: rgba(7, 11, 18, 0.2);
+        --glass-bg: rgba(15, 23, 38, 0.48);
+        --glass-bg-strong: rgba(16, 27, 46, 0.6);
+        --glass-border: rgba(134, 164, 201, 0.26);
     }
 }
 
@@ -67,6 +74,9 @@ body.dark-theme {
     --btn-ghost-text: #ffffff;
     --hero-overlay-start: rgba(7, 11, 18, 0.46);
     --hero-overlay-end: rgba(7, 11, 18, 0.2);
+    --glass-bg: rgba(15, 23, 38, 0.48);
+    --glass-bg-strong: rgba(16, 27, 46, 0.6);
+    --glass-border: rgba(134, 164, 201, 0.26);
 }
 
 body.light-theme {
@@ -90,6 +100,9 @@ body.light-theme {
     --btn-ghost-text: #111111;
     --hero-overlay-start: rgba(255, 255, 255, 0.08);
     --hero-overlay-end: rgba(255, 255, 255, 0.02);
+    --glass-bg: rgba(255, 255, 255, 0.5);
+    --glass-bg-strong: rgba(255, 255, 255, 0.66);
+    --glass-border: rgba(255, 255, 255, 0.52);
 }
 
 * {
@@ -102,7 +115,7 @@ html {
 
 body {
     margin: 0;
-    font-family: "Manrope", sans-serif;
+    font-family: var(--font-ui);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -120,7 +133,8 @@ h2,
 h3,
 .display-4 {
     color: var(--heading);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+    font-weight: 700;
 }
 
 p {
@@ -272,7 +286,7 @@ body.dark-theme .navbar-toggler-icon {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding-top: 130px;
+    padding-top: 124px;
     position: relative;
     overflow: hidden;
 }
@@ -288,7 +302,7 @@ body.dark-theme .navbar-toggler-icon {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, var(--hero-overlay-start), var(--hero-overlay-end));
+    background: linear-gradient(180deg, var(--hero-overlay-start), var(--hero-overlay-end) 44%, transparent 100%);
     pointer-events: none;
     z-index: 1;
 }
@@ -300,8 +314,8 @@ body.dark-theme .navbar-toggler-icon {
 
 .kicker {
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    font-size: 0.72rem;
     color: color-mix(in srgb, var(--accent) 70%, #64748b);
     font-weight: 800;
     margin-bottom: 0.9rem;
@@ -309,7 +323,7 @@ body.dark-theme .navbar-toggler-icon {
 
 .hero-intro {
     margin: 0 0 0.5rem;
-    font-size: 1rem;
+    font-size: 0.98rem;
     font-weight: 700;
     letter-spacing: 0.01em;
     color: color-mix(in srgb, var(--heading) 90%, transparent);
@@ -325,7 +339,7 @@ body.dark-theme .navbar-toggler-icon {
 .hero-build-line {
     margin: 0;
     min-height: 1.8em;
-    font-size: clamp(1.2rem, 2.8vw, 1.7rem);
+    font-size: clamp(1.2rem, 2.5vw, 1.55rem);
     font-weight: 800;
     color: color-mix(in srgb, var(--accent) 78%, var(--heading));
 }
@@ -371,11 +385,18 @@ body.dark-theme .navbar-toggler-icon {
 
 .hero-image-wrap {
     position: relative;
-    background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 88%, #ffffff), var(--surface-2));
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 14px;
-    box-shadow: var(--shadow);
+    background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 84%, transparent), color-mix(in srgb, var(--surface-2) 82%, transparent));
+    border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+    border-radius: 20px;
+    padding: 12px;
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.14);
+    backdrop-filter: blur(10px) saturate(125%);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-image-wrap:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 32px 62px rgba(15, 23, 42, 0.2);
 }
 
 .three-hero-canvas {
@@ -404,8 +425,8 @@ body.dark-theme .navbar-toggler-icon {
     padding: 0.62rem 0.82rem;
     border-radius: 14px;
     border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
-    background: color-mix(in srgb, var(--surface) 82%, transparent);
-    backdrop-filter: blur(8px);
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(10px);
 }
 
 .profile-chip img {
@@ -438,11 +459,11 @@ body.dark-theme .navbar-toggler-icon {
     text-decoration: none;
     color: var(--text);
     border: 1px solid var(--line);
-    background: color-mix(in srgb, var(--surface) 90%, transparent);
+    background: var(--glass-bg);
     border-radius: 999px;
     padding: 0.45rem 0.86rem;
     font-size: 0.85rem;
-    transition: all 0.2s ease;
+    transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.26s ease, background 0.26s ease;
 }
 
 .social-row a:hover {
@@ -452,8 +473,9 @@ body.dark-theme .navbar-toggler-icon {
 
 .btn-custom {
     border-radius: 999px;
-    padding: 0.66rem 1.25rem;
+    padding: 0.7rem 1.3rem;
     font-weight: 700;
+    transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.26s ease, border-color 0.26s ease, background 0.26s ease;
 }
 
 .btn-accent {
@@ -465,13 +487,15 @@ body.dark-theme .navbar-toggler-icon {
 
 .btn-accent:hover {
     color: var(--btn-accent-text);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .btn-ghost {
     border: 1px solid var(--line);
-    background: var(--surface);
+    background: var(--glass-bg);
     color: var(--btn-ghost-text);
+    backdrop-filter: blur(8px);
 }
 
 .btn-ghost:hover {
@@ -547,13 +571,15 @@ body.dark-theme .navbar-toggler-icon {
 }
 
 .project-card {
-    background: color-mix(in srgb, var(--surface) 90%, transparent);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 1.4rem;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.45rem;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease, background 0.35s ease;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(12px) saturate(130%);
+    -webkit-backdrop-filter: blur(12px) saturate(130%);
 }
 
 .project-card::before {
@@ -567,9 +593,10 @@ body.dark-theme .navbar-toggler-icon {
 }
 
 .project-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow);
-    border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+    transform: translateY(-8px);
+    box-shadow: 0 24px 40px rgba(15, 23, 42, 0.18);
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+    background: var(--glass-bg-strong);
 }
 
 .project-card h3 {
@@ -598,7 +625,7 @@ body.dark-theme .navbar-toggler-icon {
 
 .filter-btn {
     border: 1px solid var(--line);
-    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    background: var(--glass-bg);
     color: var(--text);
     border-radius: 999px;
     padding: 0.42rem 0.9rem;
@@ -606,7 +633,8 @@ body.dark-theme .navbar-toggler-icon {
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    backdrop-filter: blur(8px);
 }
 
 .filter-btn:hover {
@@ -645,18 +673,20 @@ body.dark-theme .navbar-toggler-icon {
 }
 
 .repo-card {
-    background: color-mix(in srgb, var(--surface) 90%, transparent);
-    border: 1px solid var(--line);
-    border-radius: 18px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
     padding: 1.2rem;
     height: 100%;
     box-shadow: var(--shadow);
-    transition: transform 0.22s ease, border-color 0.22s ease;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(10px) saturate(125%);
 }
 
 .repo-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
     border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+    box-shadow: 0 22px 36px rgba(15, 23, 42, 0.16);
 }
 
 .repo-card h3 {
@@ -745,13 +775,25 @@ body.dark-theme .navbar-toggler-icon {
 
 .reveal {
     opacity: 0;
-    transform: translateY(22px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(26px) scale(0.99);
+    transition: opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1), transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal.show {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .project-card,
+    .repo-card,
+    .hero-image-wrap,
+    .btn-custom,
+    .social-row a {
+        transition: none !important;
+        transform: none !important;
+    }
 }
 
 @media (max-width: 992px) {

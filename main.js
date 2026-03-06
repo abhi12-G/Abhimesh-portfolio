@@ -225,12 +225,12 @@ const setupHeroParticles = () => {
     const camera = new THREE.PerspectiveCamera(52, mount.clientWidth / mount.clientHeight, 0.1, 100);
     camera.position.z = 7;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     mount.appendChild(renderer.domElement);
 
-    const particleCount = window.innerWidth < 768 ? 220 : 420;
+    const particleCount = window.innerWidth < 768 ? 150 : 280;
     const positions = new Float32Array(particleCount * 3);
     const velocities = new Float32Array(particleCount);
 
@@ -244,12 +244,13 @@ const setupHeroParticles = () => {
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.attributes.position.setUsage(THREE.DynamicDrawUsage);
 
     const material = new THREE.PointsMaterial({
-        color: 0x8ec9ff,
-        size: window.innerWidth < 768 ? 0.03 : 0.04,
+        color: 0x9fcfff,
+        size: window.innerWidth < 768 ? 0.025 : 0.035,
         transparent: true,
-        opacity: 0.72,
+        opacity: 0.58,
         depthWrite: false
     });
 
@@ -263,7 +264,11 @@ const setupHeroParticles = () => {
         pointer.y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
     };
 
+    let rafId = 0;
+    let running = true;
+
     const animate = () => {
+        if (!running) return;
         const pos = geometry.attributes.position.array;
 
         for (let i = 0; i < particleCount; i += 1) {
@@ -278,7 +283,7 @@ const setupHeroParticles = () => {
         points.rotation.z = pointer.x * 0.05;
 
         renderer.render(scene, camera);
-        requestAnimationFrame(animate);
+        rafId = requestAnimationFrame(animate);
     };
 
     const onResize = () => {
@@ -286,12 +291,35 @@ const setupHeroParticles = () => {
         const h = mount.clientHeight;
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         renderer.setSize(w, h);
+    };
+
+    const onVisibility = () => {
+        running = !document.hidden;
+        if (running) animate();
+        else cancelAnimationFrame(rafId);
     };
 
     mount.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibility);
     animate();
+
+    window.addEventListener(
+        "beforeunload",
+        () => {
+            running = false;
+            cancelAnimationFrame(rafId);
+            mount.removeEventListener("pointermove", onPointerMove);
+            window.removeEventListener("resize", onResize);
+            document.removeEventListener("visibilitychange", onVisibility);
+            geometry.dispose();
+            material.dispose();
+            renderer.dispose();
+        },
+        { once: true }
+    );
 };
 
 const setupEmailCopy = () => {
