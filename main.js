@@ -185,18 +185,36 @@ const setupHeroTyping = () => {
     const typed = document.getElementById("typedIntro");
     if (!typed) return;
 
-    const phrase = "Hello, Welcome — I'm Abhimesh";
-    let i = 0;
+    const words = ["Web Apps", "AI Tools", "Creative Interfaces"];
+    let wordIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
 
-    const typeNext = () => {
-        typed.textContent = phrase.slice(0, i);
-        i += 1;
-        if (i <= phrase.length) {
-            window.setTimeout(typeNext, i < 8 ? 90 : 62);
+    const tick = () => {
+        const currentWord = words[wordIndex];
+        typed.textContent = deleting
+            ? currentWord.slice(0, charIndex - 1)
+            : currentWord.slice(0, charIndex + 1);
+
+        charIndex = deleting ? charIndex - 1 : charIndex + 1;
+
+        if (!deleting && charIndex === currentWord.length) {
+            deleting = true;
+            window.setTimeout(tick, 1200);
+            return;
         }
+
+        if (deleting && charIndex === 0) {
+            deleting = false;
+            wordIndex = (wordIndex + 1) % words.length;
+            window.setTimeout(tick, 220);
+            return;
+        }
+
+        window.setTimeout(tick, deleting ? 45 : 75);
     };
 
-    typeNext();
+    tick();
 };
 
 const setupHeroParticles = () => {

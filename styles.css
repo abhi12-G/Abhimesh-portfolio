@@ -308,12 +308,26 @@ body.dark-theme .navbar-toggler-icon {
 }
 
 .hero-intro {
-    margin: 0 0 0.7rem;
-    font-size: 0.94rem;
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
     font-weight: 700;
     letter-spacing: 0.01em;
     color: color-mix(in srgb, var(--heading) 90%, transparent);
     min-height: 1.6em;
+}
+
+.hero-greet {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: color-mix(in srgb, var(--heading) 95%, transparent);
+}
+
+.hero-build-line {
+    margin: 0;
+    min-height: 1.8em;
+    font-size: clamp(1.2rem, 2.8vw, 1.7rem);
+    font-weight: 800;
+    color: color-mix(in srgb, var(--accent) 78%, var(--heading));
 }
 
 .typing-caret {
