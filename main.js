@@ -1,3 +1,5 @@
+import * as THREE from "https://unpkg.com/three@0.164.1/build/three.module.js";
+
 const nav = document.getElementById("topNav");
 const links = [...document.querySelectorAll(".nav-link")];
 const sections = [...document.querySelectorAll("section[id], header[id]")];
@@ -5,6 +7,7 @@ const scrollTopBtn = document.getElementById("scrollTop");
 const themeToggle = document.getElementById("themeToggle");
 const scrollProgress = document.getElementById("scrollProgress");
 const heroParallax = document.querySelector(".hero-parallax");
+const heroCopy = document.querySelector("[data-hero-copy]");
 
 const setNavState = () => {
     const isScrolled = window.scrollY > 20;
@@ -24,6 +27,13 @@ const setHeroParallax = () => {
     if (!heroParallax || window.innerWidth < 992) return;
     const y = Math.min(window.scrollY * 0.06, 24);
     heroParallax.style.transform = `translateY(${y}px)`;
+};
+
+const setHeroCopyParallax = () => {
+    if (!heroCopy) return;
+    const y = Math.min(window.scrollY * 0.04, 18);
+    heroCopy.style.transform = `translate3d(0, ${y}px, 0)`;
+    heroCopy.style.opacity = `${Math.max(1 - window.scrollY / 900, 0.72)}`;
 };
 
 const setActiveLink = () => {
@@ -171,36 +181,99 @@ const setupThreeIntro = () => {
     gsap.fromTo(scene, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 1, ease: "power2.out" });
 };
 
-const setupVantaHero = () => {
-    const hero = document.getElementById("home");
-    if (!hero || !window.VANTA || !window.VANTA.NET) return;
+const setupHeroTyping = () => {
+    const typed = document.getElementById("typedIntro");
+    if (!typed) return;
 
-    const effect = window.VANTA.NET({
-        el: hero,
-        mouseControls: true,
-        touchControls: true,
-        gyroControls: false,
-        minHeight: 200,
-        minWidth: 200,
-        scale: 1,
-        scaleMobile: 1,
-        color: 0x59b6ff,
-        backgroundColor: 0x070b12,
-        points: 11,
-        maxDistance: 21,
-        spacing: 19,
-        showDots: false
+    const phrase = "Hello, Welcome — I'm Abhimesh";
+    let i = 0;
+
+    const typeNext = () => {
+        typed.textContent = phrase.slice(0, i);
+        i += 1;
+        if (i <= phrase.length) {
+            window.setTimeout(typeNext, i < 8 ? 90 : 62);
+        }
+    };
+
+    typeNext();
+};
+
+const setupHeroParticles = () => {
+    const mount = document.getElementById("heroParticles");
+    if (!mount || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(52, mount.clientWidth / mount.clientHeight, 0.1, 100);
+    camera.position.z = 7;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
+    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    mount.appendChild(renderer.domElement);
+
+    const particleCount = window.innerWidth < 768 ? 220 : 420;
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = new Float32Array(particleCount);
+
+    for (let i = 0; i < particleCount; i += 1) {
+        const i3 = i * 3;
+        positions[i3] = (Math.random() - 0.5) * 14;
+        positions[i3 + 1] = (Math.random() - 0.5) * 8;
+        positions[i3 + 2] = (Math.random() - 0.5) * 8;
+        velocities[i] = 0.002 + Math.random() * 0.004;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0x8ec9ff,
+        size: window.innerWidth < 768 ? 0.03 : 0.04,
+        transparent: true,
+        opacity: 0.72,
+        depthWrite: false
     });
 
-    window.addEventListener(
-        "beforeunload",
-        () => {
-            if (effect && typeof effect.destroy === "function") {
-                effect.destroy();
-            }
-        },
-        { once: true }
-    );
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
+
+    const pointer = { x: 0, y: 0 };
+    const onPointerMove = (event) => {
+        const rect = mount.getBoundingClientRect();
+        pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        pointer.y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+    };
+
+    const animate = () => {
+        const pos = geometry.attributes.position.array;
+
+        for (let i = 0; i < particleCount; i += 1) {
+            const i3 = i * 3;
+            pos[i3 + 1] += velocities[i];
+            if (pos[i3 + 1] > 4.5) pos[i3 + 1] = -4.5;
+        }
+
+        geometry.attributes.position.needsUpdate = true;
+        points.rotation.y += 0.0009;
+        points.rotation.x = pointer.y * 0.05;
+        points.rotation.z = pointer.x * 0.05;
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+    };
+
+    const onResize = () => {
+        const w = mount.clientWidth;
+        const h = mount.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    };
+
+    mount.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("resize", onResize);
+    animate();
 };
 
 const setupEmailCopy = () => {
@@ -338,15 +411,18 @@ window.addEventListener("scroll", () => {
     setActiveLink();
     setScrollProgress();
     setHeroParallax();
+    setHeroCopyParallax();
 });
 
 window.addEventListener("resize", () => {
     setScrollProgress();
     setHeroParallax();
+    setHeroCopyParallax();
 });
 
 window.addEventListener("load", () => {
-    setupVantaHero();
+    setupHeroTyping();
+    setupHeroParticles();
     setupScrollParallax();
     setupThemeToggle();
     setNavState();
@@ -354,6 +430,7 @@ window.addEventListener("load", () => {
     setFooterYear();
     setScrollProgress();
     setHeroParallax();
+    setHeroCopyParallax();
     setupReveal();
     setupThreeIntro();
     setupProjectFiltering();

@@ -277,18 +277,25 @@ body.dark-theme .navbar-toggler-icon {
     overflow: hidden;
 }
 
+.hero-particles {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .hero::before {
     content: "";
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, var(--hero-overlay-start), var(--hero-overlay-end));
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
 }
 
 .hero .container {
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 .kicker {
@@ -298,6 +305,35 @@ body.dark-theme .navbar-toggler-icon {
     color: color-mix(in srgb, var(--accent) 70%, #64748b);
     font-weight: 800;
     margin-bottom: 0.9rem;
+}
+
+.hero-intro {
+    margin: 0 0 0.7rem;
+    font-size: 0.94rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: color-mix(in srgb, var(--heading) 90%, transparent);
+    min-height: 1.6em;
+}
+
+.typing-caret {
+    display: inline-block;
+    width: 0.08em;
+    height: 1em;
+    margin-left: 0.2em;
+    vertical-align: -0.12em;
+    background: color-mix(in srgb, var(--accent) 72%, var(--heading));
+    animation: caretBlink 1s steps(1, end) infinite;
+}
+
+@keyframes caretBlink {
+    50% {
+        opacity: 0;
+    }
+}
+
+.hero-copy {
+    will-change: transform, opacity;
 }
 
 .three-showcase {
