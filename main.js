@@ -107,27 +107,22 @@ const setupScrollParallax = () => {
 };
 
 const setupProjectCardScroll = () => {
-    if (!window.gsap || !window.ScrollTrigger) return;
+    const cards = [...document.querySelectorAll(".project-card")];
+    if (!cards.length) return;
 
-    gsap.registerPlugin(ScrollTrigger);
-
-    gsap.utils.toArray(".project-card").forEach((card) => {
-        gsap.fromTo(
-            card,
-            { y: 50, autoAlpha: 0, scale: 0.95 },
-            {
-                y: 0,
-                autoAlpha: 1,
-                scale: 1,
-                duration: 1.2,
-                ease: "expo.out",
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top 80%",
-                    toggleActions: "play none none none"
-                }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("in-view");
+                observer.unobserve(entry.target);
             }
-        );
+        });
+    }, { threshold: 0.18 });
+
+    cards.forEach((card, idx) => {
+        card.classList.add("js-card-animate");
+        card.style.transitionDelay = `${Math.min(idx * 90, 260)}ms`;
+        observer.observe(card);
     });
 };
 
@@ -174,11 +169,11 @@ const setupProjectFiltering = () => {
 };
 
 const setupThreeIntro = () => {
-    if (!window.gsap) return;
     const scene = document.querySelector(".hero-image-wrap");
     if (!scene) return;
 
-    gsap.fromTo(scene, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 1, ease: "power2.out" });
+    scene.classList.add("hero-media-intro");
+    requestAnimationFrame(() => scene.classList.add("hero-media-visible"));
 };
 
 const setupHeroTyping = () => {
