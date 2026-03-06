@@ -61,6 +61,41 @@ const setupReveal = () => {
     });
 };
 
+const setupScrollParallax = () => {
+    const layers = [...document.querySelectorAll(".parallax-layer[data-parallax-speed]")];
+    if (!layers.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const mobileFactor = window.matchMedia("(max-width: 767px)").matches ? 0.55 : 1;
+    let rafPending = false;
+
+    const updateLayers = () => {
+        const viewportCenter = window.innerHeight * 0.5;
+
+        layers.forEach((layer) => {
+            const speed = Number(layer.dataset.parallaxSpeed || 0) * mobileFactor;
+            const host = layer.closest(".parallax-host");
+            if (!host) return;
+
+            const rect = host.getBoundingClientRect();
+            const sectionCenter = rect.top + rect.height * 0.5;
+            const offset = (viewportCenter - sectionCenter) * speed;
+            layer.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
+        });
+
+        rafPending = false;
+    };
+
+    const requestUpdate = () => {
+        if (rafPending) return;
+        rafPending = true;
+        window.requestAnimationFrame(updateLayers);
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    requestUpdate();
+};
+
 const setupProjectCardScroll = () => {
     if (!window.gsap || !window.ScrollTrigger) return;
 
@@ -83,6 +118,48 @@ const setupProjectCardScroll = () => {
                 }
             }
         );
+    });
+};
+
+const setupProjectFiltering = () => {
+    const filterWrap = document.querySelector("[data-project-filters]");
+    const items = [...document.querySelectorAll("[data-project-item]")];
+    if (!filterWrap || !items.length) return;
+
+    const buttons = [...filterWrap.querySelectorAll("[data-filter]")];
+
+    const applyFilter = (filter) => {
+        items.forEach((item) => {
+            const category = item.dataset.category;
+            const shouldShow = filter === "all" || category === filter;
+
+            if (shouldShow) {
+                item.classList.remove("is-hidden", "is-leaving");
+                item.classList.add("is-entering");
+                requestAnimationFrame(() => item.classList.remove("is-entering"));
+            } else if (!item.classList.contains("is-hidden")) {
+                item.classList.remove("is-entering");
+                item.classList.add("is-leaving");
+                window.setTimeout(() => {
+                    item.classList.add("is-hidden");
+                    item.classList.remove("is-leaving");
+                }, 260);
+            }
+        });
+    };
+
+    buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const filter = button.dataset.filter || "all";
+
+            buttons.forEach((btn) => {
+                const active = btn === button;
+                btn.classList.toggle("active", active);
+                btn.setAttribute("aria-pressed", active ? "true" : "false");
+            });
+
+            applyFilter(filter);
+        });
     });
 };
 
@@ -147,6 +224,67 @@ const setupEmailCopy = () => {
     });
 };
 
+const setupGitHubRepos = async () => {
+    const repoGrid = document.getElementById("githubRepos");
+    if (!repoGrid) return;
+
+    const username = "abhi12-G";
+    const endpoint = `https://api.github.com/users/${username}/repos?sort=updated&per_page=12`;
+
+    try {
+        const response = await fetch(endpoint, {
+            headers: { Accept: "application/vnd.github+json" }
+        });
+
+        if (!response.ok) {
+            throw new Error(`GitHub API returned ${response.status}`);
+        }
+
+        const repos = await response.json();
+        const latestRepos = repos
+            .filter((repo) => !repo.fork)
+            .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at))
+            .slice(0, 6);
+
+        if (!latestRepos.length) {
+            repoGrid.innerHTML = `
+                <div class="col-12">
+                    <div class="github-error">No repositories found.</div>
+                </div>
+            `;
+            return;
+        }
+
+        repoGrid.innerHTML = latestRepos
+            .map(
+                (repo) => `
+                    <div class="col-sm-6 col-xl-4 reveal">
+                        <article class="repo-card">
+                            <h3>
+                                <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name}</a>
+                            </h3>
+                            <p>${repo.description || "No description provided."}</p>
+                            <div class="repo-meta">
+                                <span class="repo-pill">Stars: ${repo.stargazers_count}</span>
+                                <span class="repo-pill">Language: ${repo.language || "N/A"}</span>
+                            </div>
+                        </article>
+                    </div>
+                `
+            )
+            .join("");
+
+        setupReveal();
+    } catch (error) {
+        repoGrid.innerHTML = `
+            <div class="col-12">
+                <div class="github-error">Unable to load repositories right now.</div>
+            </div>
+        `;
+        console.error("GitHub repos fetch failed:", error);
+    }
+};
+
 const setFooterYear = () => {
     const footerText = document.querySelector("footer .container");
     if (!footerText) return;
@@ -157,6 +295,7 @@ const setFooterYear = () => {
 const setTheme = (theme) => {
     const dark = theme === "dark";
     document.body.classList.toggle("dark-theme", dark);
+    document.body.classList.toggle("light-theme", !dark);
 
     if (themeToggle) {
         themeToggle.textContent = dark ? "Light Mode" : "Dark Mode";
@@ -165,8 +304,10 @@ const setTheme = (theme) => {
 };
 
 const setupThemeToggle = () => {
-    const savedTheme = localStorage.getItem("site-theme") || "light";
-    setTheme(savedTheme);
+    const savedTheme = localStorage.getItem("site-theme");
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    const initialTheme = savedTheme || systemTheme;
+    setTheme(initialTheme);
 
     if (!themeToggle) return;
 
@@ -206,6 +347,7 @@ window.addEventListener("resize", () => {
 
 window.addEventListener("load", () => {
     setupVantaHero();
+    setupScrollParallax();
     setupThemeToggle();
     setNavState();
     setActiveLink();
@@ -214,6 +356,8 @@ window.addEventListener("load", () => {
     setHeroParallax();
     setupReveal();
     setupThreeIntro();
+    setupProjectFiltering();
     setupProjectCardScroll();
     setupEmailCopy();
+    setupGitHubRepos();
 });

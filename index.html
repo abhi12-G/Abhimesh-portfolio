@@ -39,7 +39,8 @@
         </div>
     </nav>
 
-    <header class="hero section" id="home">
+    <header class="hero section parallax-host" id="home">
+        <div class="hero-parallax-layer parallax-layer" data-parallax-speed="0.16" aria-hidden="true"></div>
         <div class="container">
             <div class="row align-items-center g-4 g-lg-5">
                 <div class="col-lg-6 reveal">
@@ -116,7 +117,8 @@
         </div>
     </section>
 
-    <section class="section section-alt" id="work">
+    <section class="section section-alt parallax-host" id="work">
+        <div class="work-parallax-layer parallax-layer" data-parallax-speed="0.1" aria-hidden="true"></div>
         <div class="container">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 reveal gap-2">
                 <div>
@@ -125,26 +127,32 @@
                 </div>
                 <p class="text-muted mb-0">A few things I recently built.</p>
             </div>
+            <div class="project-filters reveal mb-4" data-project-filters>
+                <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+                <button type="button" class="filter-btn" data-filter="frontend" aria-pressed="false">Frontend</button>
+                <button type="button" class="filter-btn" data-filter="backend" aria-pressed="false">Backend</button>
+                <button type="button" class="filter-btn" data-filter="fullstack" aria-pressed="false">Fullstack</button>
+            </div>
             <div class="row g-4">
-                <div class="col-md-6 col-lg-4 reveal">
+                <div class="col-md-6 col-lg-4 reveal project-item" data-project-item data-category="frontend">
                     <article class="project-card h-100">
                         <h3>Portfolio Landing</h3>
                         <p>Modern personal website with hero section and smooth scrolling navigation.</p>
-                        <span>HTML + CSS + JS</span>
+                        <span>Frontend</span>
                     </article>
                 </div>
-                <div class="col-md-6 col-lg-4 reveal">
+                <div class="col-md-6 col-lg-4 reveal project-item" data-project-item data-category="backend">
                     <article class="project-card h-100">
-                        <h3>Bootstrap Clone</h3>
-                        <p>Responsive clone project to practice grid, spacing, cards, and mobile menu behavior.</p>
-                        <span>Bootstrap 5</span>
+                        <h3>Auth API Service</h3>
+                        <p>JWT based authentication service with validation, role checks, and secure routes.</p>
+                        <span>Backend</span>
                     </article>
                 </div>
-                <div class="col-md-6 col-lg-4 reveal">
+                <div class="col-md-6 col-lg-4 reveal project-item" data-project-item data-category="fullstack">
                     <article class="project-card h-100">
-                        <h3>UI Components</h3>
-                        <p>A reusable section set including buttons, cards, and feature blocks for fast prototyping.</p>
-                        <span>Component Design</span>
+                        <h3>Task Manager App</h3>
+                        <p>End-to-end app with dashboard UI, API integration, and user-based task workflows.</p>
+                        <span>Fullstack</span>
                     </article>
                 </div>
             </div>
@@ -167,6 +175,23 @@
                 </div>
                 <div class="col-lg-5 reveal">
                     <img src="/element/images1.jpeg" class="img-fluid rounded-4 soft-shadow" alt="Hobby image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt" id="github">
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 reveal gap-2">
+                <div>
+                    <p class="kicker">GitHub</p>
+                    <h2 class="fw-bold mb-0">Latest Repositories</h2>
+                </div>
+                <p class="text-muted mb-0">Live data fetched from GitHub API.</p>
+            </div>
+            <div class="row g-4" id="githubRepos">
+                <div class="col-12">
+                    <div class="github-loading">Loading repositories...</div>
                 </div>
             </div>
         </div>
