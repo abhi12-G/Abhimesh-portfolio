@@ -407,13 +407,6 @@ const setFooterYear = () => {
 
 const setupVisitorCounter = async () => {
     const visitorCountEl = document.getElementById("visitorCount");
-    const visitorBadgeEl = document.getElementById("visitorBadge");
-
-    if (visitorBadgeEl) {
-        const pageKey = encodeURIComponent(`${window.location.origin}${window.location.pathname}`);
-        visitorBadgeEl.src = `https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=${pageKey}&count_bg=%23111827&title_bg=%23343a40&icon=&icon_color=%23E7E7E7&title=Visitors&edge_flat=true`;
-    }
-
     if (!visitorCountEl) return;
 
     try {
@@ -426,7 +419,11 @@ const setupVisitorCounter = async () => {
         const count = Number(data?.value);
         visitorCountEl.textContent = Number.isFinite(count) ? count.toLocaleString("en-IN") : "N/A";
     } catch (error) {
-        visitorCountEl.textContent = "See badge below";
+        const localKey = "portfolio-local-visits";
+        const current = Number(localStorage.getItem(localKey) || 0);
+        const next = Number.isFinite(current) ? current + 1 : 1;
+        localStorage.setItem(localKey, String(next));
+        visitorCountEl.textContent = `${next.toLocaleString("en-IN")} (local)`;
         console.error("Visitor counter failed:", error);
     }
 };
