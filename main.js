@@ -400,10 +400,28 @@ const setupGitHubRepos = async () => {
 };
 
 const setFooterYear = () => {
-    const footerText = document.querySelector("footer .container");
-    if (!footerText) return;
-    const year = new Date().getFullYear();
-    footerText.innerHTML = `&copy; ${year} Abhimesh. Crafted with care.`;
+    const yearEl = document.getElementById("currentYear");
+    if (!yearEl) return;
+    yearEl.textContent = String(new Date().getFullYear());
+};
+
+const setupVisitorCounter = async () => {
+    const visitorCountEl = document.getElementById("visitorCount");
+    if (!visitorCountEl) return;
+
+    try {
+        const response = await fetch("https://api.countapi.xyz/hit/abhimesh-portfolio-clone/visits");
+        if (!response.ok) {
+            throw new Error(`Counter API returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        const count = Number(data?.value);
+        visitorCountEl.textContent = Number.isFinite(count) ? count.toLocaleString("en-IN") : "N/A";
+    } catch (error) {
+        visitorCountEl.textContent = "N/A";
+        console.error("Visitor counter failed:", error);
+    }
 };
 
 const setTheme = (theme) => {
@@ -478,4 +496,5 @@ window.addEventListener("load", () => {
     setupProjectCardScroll();
     setupEmailCopy();
     setupGitHubRepos();
+    setupVisitorCounter();
 });
