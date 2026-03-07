@@ -409,23 +409,30 @@ const setupVisitorCounter = async () => {
     const visitorCountEl = document.getElementById("visitorCount");
     if (!visitorCountEl) return;
 
-    try {
-        const response = await fetch("https://api.countapi.xyz/hit/abhimesh-portfolio-clone/visits");
-        if (!response.ok) {
-            throw new Error(`Counter API returned ${response.status}`);
-        }
+    const endpoints = [
+        "/api/visitor-count",
+        "https://api.countapi.xyz/hit/abhimesh-portfolio-clone/visits"
+    ];
 
-        const data = await response.json();
-        const count = Number(data?.value);
-        visitorCountEl.textContent = Number.isFinite(count) ? count.toLocaleString("en-IN") : "N/A";
-    } catch (error) {
-        const localKey = "portfolio-local-visits";
-        const current = Number(localStorage.getItem(localKey) || 0);
-        const next = Number.isFinite(current) ? current + 1 : 1;
-        localStorage.setItem(localKey, String(next));
-        visitorCountEl.textContent = `${next.toLocaleString("en-IN")} (local)`;
-        console.error("Visitor counter failed:", error);
+    for (const endpoint of endpoints) {
+        try {
+            const response = await fetch(endpoint, { cache: "no-store" });
+            if (!response.ok) {
+                throw new Error(`Counter API returned ${response.status}`);
+            }
+
+            const data = await response.json();
+            const count = Number(data?.value);
+            if (Number.isFinite(count)) {
+                visitorCountEl.textContent = count.toLocaleString("en-IN");
+                return;
+            }
+        } catch (error) {
+            console.error(`Visitor counter failed for ${endpoint}:`, error);
+        }
     }
+
+    visitorCountEl.textContent = "Unavailable";
 };
 
 const setTheme = (theme) => {
